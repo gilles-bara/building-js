@@ -28,7 +28,7 @@ export class Renderer {
         document.addEventListener('keydown', (e) => {
             if (!this._selectedFloor)
                 return;
-            if(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLButtonElement)
+            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLButtonElement)
                 return;
             switch (e.key) {
                 case 'ArrowLeft':
@@ -45,8 +45,30 @@ export class Renderer {
                     break;
             }
         });
+        this._listenForTouchHandlers();
         this._rotationY = 0;
         this.apply(this._building, floor, layer);
+    }
+
+    private _listenForTouchHandlers(): void {
+        let startX: number, startY: number;
+
+        document.addEventListener('touchstart', e => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+
+        document.addEventListener('touchend', e => {
+            const dx = e.changedTouches[0].clientX - startX;
+            const dy = e.changedTouches[0].clientY - startY;
+            if (Math.abs(dx) > Math.abs(dy)) {
+                if (dx > 50) this.left();
+                else if (dx < -50) this.right();
+            } else {
+                if (dy > 50) this.up();
+                else if (dy < -50) this.down();
+            }
+        });
     }
 
     public getWall(element: HTMLDivElement): { element: HTMLElement, wall: Wall } | null {
