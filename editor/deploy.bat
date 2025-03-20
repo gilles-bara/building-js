@@ -1,0 +1,1 @@
+tar.exe -cavf dist\building-editor-js.zip web.config index.html styles.min.* -C ./ dist/m.* -C ./

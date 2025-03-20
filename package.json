@@ -1,0 +1,24 @@
+{
+  "name": "building",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "postbuild": "(brotli-cli compress --glob --bail dist/*.js *.min.css) && npm run zip",
+    "build": "tsc && (esbuild dist/main.js --bundle --format=esm --minify --outfile=dist/m.js) && (esbuild styles.css --minify --outfile=styles.min.css)",
+    "serve": "lite-server",
+    "zip": "@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./deploy.bat",
+    "start": "concurrently \"npm run build\" \"npm run serve\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "lite-server": "^2.6.1",
+    "typescript": "^5.8.2"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "esbuild": "^0.25.1"
+  }
+}

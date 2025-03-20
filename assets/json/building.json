@@ -1,0 +1,109 @@
+{
+  "name": "Data Center Alpha",
+  "l": 15,
+  "h": 4,
+  "d": 10,
+  "angle": 45,
+  "styles": [
+    { "class": "state.normal", "style": "background-color: #2ECC71 !important" },
+    { "class": "state.warning", "style": "background-color: #F39C12 !important" },
+    { "class": "state.critical", "style": "background-color: #E74C3C !important" }
+    
+  ],
+  "floors": [
+    {
+      "name": "Ground Floor",
+      "l": 15,
+      "d": 10,
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "floors": [{ "x": 0, "y": 0, "z": 0, "l": 15, "d": 10, "h": 0.2 }],
+      "walls":{
+        "outer": [
+          { "x": 0, "y": 0.2, "z": 0, "l": 15, "d": 0.2, "h": 2.8 },
+          { "x": 0, "y": 0.2, "z": 9.8, "l": 7.6, "d": 0.2, "h": 2.8 },
+          { "x": 9.6, "y": 0.2, "z": 9.8, "l": 5.4, "d": 0.2, "h": 2.8 },
+          { "x": 0, "y": 0.2, "z": 0.2, "l": 0.8, "d": 0.2, "h": 2.8, "o": "ns" },
+          { "x": 0, "y": 0.2, "z": 2.8, "l": 7, "d": 0.2, "h": 2.8, "o": "ns" },
+          { "x": 0, "y": 2.2, "z": 1, "l": 1.8, "d": 0.2, "h": 0.8, "o": "ns" },
+          { "x": 14.8, "y": 0.2, "z": 0.2, "l": 9.6, "d": 0.2, "h": 2.8, "o": "ns" }
+        ],
+        "inner": [          
+          { "x": 0.2, "y": 0.2, "z": 3, "l": 7, "d": 0.1, "h": 2.8 },
+          { "x": 0.2, "y": 0.2, "z": 6, "l": 6.9, "d": 0.1, "h": 2.8 },
+          { "x": 7.1, "y": 0.2, "z": 8.4, "l": 1.5, "d": 0.1, "h": 2.8, "o": "ns" },
+          { "x": 7.1, "y": 0.2, "z": 5.5, "l": 1.1, "d": 0.1, "h": 2.8, "o": "ns" },
+          { "x": 7.1, "y": 0.2, "z": 3.1, "l": 0.5, "d": 0.1, "h": 2.8, "o": "ns" },
+          { "x": 10, "y": 0.2, "z": 0.2, "l": 1, "d": 0.1, "h": 2.8, "o": "ns" },
+          { "x": 10, "y": 0.2, "z": 8.8, "l": 1, "d": 0.1, "h": 2.8, "o": "ns" },
+          { "x": 13.95, "y": 0.2, "z": 0.8, "l": 0.1, "d": 0.85, "h": 2, "o":"ns", "class": "gray" },
+          { "x": 13.95, "y": 0.2, "z": 1.5, "l": 0.1, "d": 0.85, "h": 2, "o":"ns", "class": "gray" },
+          { "x": 13.95, "y": 0.2, "z": 2.2, "l": 0.1, "d": 0.85, "h": 2, "o":"ns", "class": "gray" },
+          { "x": 13.95, "y": 0.2, "z": 2.9, "l": 0.1, "d": 0.85, "h": 2, "o":"ns", "class": "gray" },
+          { "x": 13.95, "y": 0.2, "z": 3.6, "l": 0.1, "d": 0.85, "h": 2, "o":"ns", "class": "gray" },
+          { "x": 13.95, "y": 0.2, "z": 4.3, "l": 0.1, "d": 0.85, "h": 2, "o":"ns", "class": "gray" },
+          { "x": 13.95, "y": 0.2, "z": 5, "l": 0.1, "d": 0.85, "h": 2, "o":"ns", "class": "gray" },
+          { "x": 13.95, "y": 0.2, "z": 5.7, "l": 0.1, "d": 0.85, "h": 2, "o":"ns", "class": "gray" },
+          { "x": 13.95, "y": 0.2, "z": 6.4, "l": 0.1, "d": 0.85, "h": 2, "o":"ns", "class": "gray" },
+          { "x": 13.95, "y": 0.2, "z": 7.1, "l": 0.1, "d": 0.85, "h": 2, "o":"ns", "class": "gray" },
+          { "x": 13.95, "y": 0.2, "z": 7.8, "l": 0.1, "d": 0.85, "h": 2, "o":"ns", "class": "gray" },
+          { "x": 13.95, "y": 0.2, "z": 8.5, "l": 0.1, "d": 0.85, "h": 2, "o":"ns", "class": "gray" },
+          { "x": 13.95, "y": 0.2, "z": 9.2, "l": 0.1, "d": 0.85, "h": 2, "o":"ns", "class": "gray" },
+          { "x": 13.95, "y": 2.2, "z": 0.2, "l": 9.1, "d": 0.85, "h": 0.05, "o":"ns", "class": "gray" }
+        ]
+      },
+      "windows": [
+        { "x": 7.6, "y": 0.2, "z": 9.9, "l": 2, "d": 0.1, "h": 2.8 }
+        ],
+      "glass": [
+        { "x": 7.15, "y": 0.2, "z": 3.6, "l": 1.9, "d": 0.05, "h": 2.8, "o": "ns" },
+        { "x": 7.15, "y": 0.2, "z": 6.6, "l": 1.8, "d": 0.05, "h": 2.8, "o": "ns" },
+        { "x": 10, "y": 0.2, "z": 1.2, "l": 7.6, "d": 0.05, "h": 2.8, "o": "ns" }
+      ],
+      "items": [
+        { "x": 14, "y": 0.2, "z": 0.2, "l": 0.6, "d": 0.8, "h": 2, "o":"ns", "class": "gradient black" },
+        { "x": 14, "y": 0.2, "z": 0.9, "l": 0.6, "d": 0.8, "h": 2, "o":"ns", "class": "gradient black" },
+        { "x": 14, "y": 0.2, "z": 1.6, "l": 0.6, "d": 0.8, "h": 2, "o":"ns", "class": "gradient black" },
+        { "x": 14, "y": 0.2, "z": 2.3, "l": 0.6, "d": 0.8, "h": 2, "o":"ns", "class": "gradient black" },
+        { "x": 14, "y": 0.2, "z": 3.0, "l": 0.6, "d": 0.8, "h": 2, "o":"ns", "class": "gradient black" },
+        { "x": 14, "y": 0.2, "z": 3.7, "l": 0.6, "d": 0.8, "h": 2, "o":"ns", "class": "gradient black" },
+        { "x": 14, "y": 0.2, "z": 4.4, "l": 0.6, "d": 0.8, "h": 2, "o":"ns", "class": "gradient black" },
+        { "x": 14, "y": 0.2, "z": 5.1, "l": 0.6, "d": 0.8, "h": 2, "o":"ns", "class": "gradient black" },
+        { "x": 14, "y": 0.2, "z": 5.8, "l": 0.6, "d": 0.8, "h": 2, "o":"ns", "class": "gradient black" },
+        { "x": 14, "y": 0.2, "z": 6.5, "l": 0.6, "d": 0.8, "h": 2, "o":"ns", "class": "gradient black" },
+        { "x": 14, "y": 0.2, "z": 7.2, "l": 0.6, "d": 0.8, "h": 2, "o":"ns", "class": "gradient black" },
+        { "x": 14, "y": 0.2, "z": 7.9, "l": 0.6, "d": 0.8, "h": 2, "o":"ns", "class": "gradient black" },
+        { "x": 14, "y": 0.2, "z": 8.6, "l": 0.6, "d": 0.8, "h": 2, "o":"ns", "class": "gradient black" }
+      ],
+      "sensors": [
+        { "x": 14.4, "y": 2.4, "z": 0.5, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "cpu", "unit": "%", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 1.2, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "cpu", "unit": "%", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 1.9, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "cpu", "unit": "%", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 2.6, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "cpu", "unit": "%", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 3.3, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "cpu", "unit": "%", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 4.0, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "cpu", "unit": "%", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 4.7, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "cpu", "unit": "%", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 5.4, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "cpu", "unit": "%", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 6.1, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "cpu", "unit": "%", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 6.8, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "cpu", "unit": "%", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 7.5, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "cpu", "unit": "%", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 8.2, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "cpu", "unit": "%", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 8.9, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "cpu", "unit": "%", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 0.5, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "temperature", "unit": "°C", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 1.2, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "temperature", "unit": "°C", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 1.9, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "temperature", "unit": "°C", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 2.6, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "temperature", "unit": "°C", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 3.3, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "temperature", "unit": "°C", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 4.0, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "temperature", "unit": "°C", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 4.7, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "temperature", "unit": "°C", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 5.4, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "temperature", "unit": "°C", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 6.1, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "temperature", "unit": "°C", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 6.8, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "temperature", "unit": "°C", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 7.5, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "temperature", "unit": "°C", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 8.2, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "temperature", "unit": "°C", "api": "testAPI", "pollingInterval": 5 },
+        { "x": 14.4, "y": 2.4, "z": 8.9, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "temperature", "unit": "°C", "api": "testAPI", "pollingInterval": 5 }         
+      ]
+    }
+  ]
+}
