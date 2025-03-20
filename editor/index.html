@@ -3,13 +3,39 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Building editor</title>
-    <link rel="stylesheet"
-          href="./styles.min.css">
+    <link rel="stylesheet" href="./styles.min.css">
     <style>
-        form {
+        .group.selected .side::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            opacity: 0.8;
+            background-color: #213572;
+        }
+
+        body:has(.group.selected) {
+            .requires-no-shape {
+                display: none !important;
+            }
+
+            .requires-shape {
+                display: flex !important;
+            }
+        }
+        
+        body:not(:has(.group.selected)) {
+            .requires-no-shape {
+                display: flex !important;
+            }
+
+            .requires-shape {
+                display: none !important;
+            }
+        }
+
+        #panel {
             z-index: 999;
             display: flex;
             flex-direction: column;
@@ -38,10 +64,15 @@
                 margin: 0;
             }
 
-            >div {
+            >form {
                 display: flex;
                 flex-direction: column;
                 gap: 16px;
+
+                &:has(:user-invalid) button {
+                    opacity: 0.4;
+                    pointer-events: none;
+                }
             }
 
             &:has(:focus-visible),
@@ -71,27 +102,64 @@
             outline: none;
             padding: 8px 8px;
             background-color: transparent;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+
+            &[readonly] {
+                border: 2px solid #777777;
+
+                &:focus-visible {
+                    outline: 2px solid #aaaaaa;
+                }
+            }
 
             &:focus-visible {
-                outline: 2px solid #476bd6;
+                outline: 2px solid #7799ff;
+            }
+
+            &:user-invalid {
+                border: 2px solid #722121;
+                outline: 2px solid #fd8383;
             }
         }
 
         button {
             background-color: #213572;
             color: #ffffff;
+            text-transform: uppercase;
+
+            &.danger {
+                background-color: #722121;
+                border-color: #722121;
+
+                &:focus-visible {
+                    outline: 2px solid #fd8383;
+                }
+            }
+        }
+
+        .inputs {
+            display: flex;
+            gap: 8px;
+
+            div {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                flex: 1 0 auto;
+                width: 0;
+            }
         }
     </style>
 </head>
 
 <body>
-    <form>
+    <div id="panel">
         <h2>Settings</h2>
-        <div>
+        <form>
             <h3>General settings</h3>
             <label for="json">File contents</label>
-            <textarea rows="10"
-                      id="json">{
+            <textarea rows="10" id="json" required>{
                 "name": "Building",
                 "l": 10,
                 "h": 4,
@@ -128,13 +196,12 @@
                   }
                 ]
               }</textarea>
-            <button type="button"
-                    id="apply">Apply</button>
-        </div>
-        <div>
-            <h3>Shapes</h3>
+            <button type="button" id="apply">Apply</button>
+        </form>
+        <form class="requires-no-shape">
+            <h3>Shape settings</h3>
             <label for="shape-type">Shape type</label>
-            <select id="shape-type">
+            <select id="shape-type" required>
                 <option value="walls.outer">Outer wall</option>
                 <option value="walls.inner">Inner wall</option>
                 <option value="windows">Window</option>
@@ -142,78 +209,89 @@
                 <option value="items">Item</option>
                 <option value="sensors">Sensor</option>
             </select>
-            <button type="button"
-                    id="add-shape">Add</button>
-        </div>
-        <div id="shape-settings"
-             class="hidden">
-            <label for="shape-x">X</label>
-            <input type="number"
-                   id="shape-x">
+            <button type="button" id="add-shape">Add</button>
+        </form>
+        <form class="requires-shape">
+            <h3>Shape settings</h3>
+            <div class="inputs">
+                <div>
+                    <label for="shape-x">X</label>
+                    <input type="number" id="shape-x" required>
+                </div>
 
-            <label for="shape-y">Y</label>
-            <input type="number"
-                   id="shape-y">
+                <div>
+                    <label for="shape-y">Y</label>
+                    <input type="number" id="shape-y" required>
+                </div>
 
-            <label for="shape-z">Z</label>
-            <input type="number"
-                   id="shape-z">
+                <div>
+                    <label for="shape-z">Z</label>
+                    <input type="number" id="shape-z" required>
+                </div>
+            </div>
 
-            <label for="shape-l">Length</label>
-            <input type="number"
-                   id="shape-l">
+            <div class="inputs">
+                <div>
+                    <label for="shape-l">Length</label>
+                    <input type="number" id="shape-l" required min="0">
+                </div>
 
-            <label for="shape-d">Depth</label>
-            <input type="number"
-                   id="shape-d">
+                <div>
+                    <label for="shape-d">Depth</label>
+                    <input type="number" id="shape-d" required min="0">
+                </div>
 
-            <label for="shape-h">Height</label>
-            <input type="number"
-                   id="shape-h">
+                <div>
+                    <label for="shape-h">Height</label>
+                    <input type="number" id="shape-h" required min="0">
+                </div>
+            </div>
 
-            <button type="button"
-                    id="apply-shape">Update shape</button>
-        </div>
-        <div>
-            <h3>URL arguments</h3>
-            <label for="mode">Mode</label>
-            <select id="mode">
-                <option value="">Normal</option>
-                <option value="x-ray">X-Ray</option>
-                <option value="mono">Mono</option>
-            </select>
+            <button type="button" id="deselect-shape">Deselect</button>
+            <button type="button" id="apply-shape">Update</button>
+            <button type="button" class="danger" id="delete-shape">Delete</button>
+        </form>
+        <form>
+            <h3>URL</h3>
+            <div class="inputs">
+                <div>
+                    <label for="mode">Mode</label>
+                    <select id="mode" required>
+                        <option value="">Normal</option>
+                        <option value="x-ray">X-Ray</option>
+                        <option value="mono">Mono</option>
+                    </select>
+                </div>
 
-            <label for="view">Initial view</label>
-            <select id="view">
-                <option value="top">Top</option>
-                <option value="front">Front</option>
-                <option value="front left">Front Left</option>
-                <option value="left">Left</option>
-                <option value="back left">Back Left</option>
-                <option value="back">Back</option>
-                <option value="back right">Back Right</option>
-                <option value="right">Right</option>
-                <option value="front right">Front Right</option>
-            </select>
+                <div>
+                    <label for="view">Initial view</label>
+                    <select id="view" required>
+                        <option value="top">Top</option>
+                        <option value="front">Front</option>
+                        <option value="front left">Front Left</option>
+                        <option value="left">Left</option>
+                        <option value="back left">Back Left</option>
+                        <option value="back">Back</option>
+                        <option value="back right">Back Right</option>
+                        <option value="right">Right</option>
+                        <option value="front right">Front Right</option>
+                    </select>
+                </div>
 
-            <label for="layer">Layer</label>
-            <select id="layer">
-                <option value="">None</option>
-                <option value="x-ray">X-Ray</option>
-                <option value="mono">Mono</option>
-            </select>
-
-            <label for="url">URL</label>
-            <input readonly
-                   id="url">
-        </div>
-    </form>
-    <input type="color"
-           id="color"
-           value="#111111"
-           oninput="document.body.style.background = this.value">
-    <script src="./dist/m.js"
-            type="module"></script>
+                <div>
+                    <label for="layer">Layer</label>
+                    <select id="layer" required>
+                        <option value="">None</option>
+                        <option value="x-ray">X-Ray</option>
+                        <option value="mono">Mono</option>
+                    </select>
+                </div>
+            </div>
+            <input readonly id="url">
+        </form>
+    </div>
+    <input type="color" id="color" value="#111111" oninput="document.body.style.background = this.value">
+    <script src="./dist/m.js" type="module"></script>
 </body>
 
 </html>

@@ -207,7 +207,9 @@ type Block = Surface & {
 	h: number;
 }
 
-type Walls = (Block & Position & { o: orientation, class?: string })[];
+export type APIWall = Block & Position;
+
+export type Walls = (APIWall & { o: orientation, class?: string })[];
 
 export type APISensor = { api: string, valueProperty: string, stateProperty: string, unit?: string, pollingInterval: number };
 
@@ -224,7 +226,7 @@ export type APIBuilding = Block & {
 		windows?: Walls,
 		glass?: Walls,
 		items?: Walls,
-		sensors?: (Block & Position & APISensor & { layer?: string, class: string })[]
+		sensors?: (APIWall & APISensor & { layer?: string, class: string })[]
 	})[]
 }
 

@@ -28,6 +28,8 @@ export class Renderer {
         document.addEventListener('keydown', (e) => {
             if (!this._selectedFloor)
                 return;
+            if(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLButtonElement)
+                return;
             switch (e.key) {
                 case 'ArrowLeft':
                     this.left();
@@ -52,6 +54,10 @@ export class Renderer {
         if (!info)
             return null;
         return { element: info[1], wall: info[0] };
+    }
+
+    public getElement(wall: Wall): HTMLElement | null {
+        return this._wallElements.get(wall) ?? null;
     }
 
     public apply(building: Building, floor = '', layer = ''): void {

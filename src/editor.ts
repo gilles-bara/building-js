@@ -1,4 +1,4 @@
-import { APIBuilding, Building } from "./building";
+import { APIBuilding, APIWall, Building } from "./building";
 import { Renderer } from "./renderer";
 
 let currentJSON: APIBuilding;
@@ -7,7 +7,6 @@ let lookup: ReturnType<typeof Building.fromJSON>['lookup'];
 let selectedShape: ReturnType<Renderer['getWall']>;
 const params = new URLSearchParams(window.location.search);
 function init(json: APIBuilding): void {
-    selectedShape?.element.classList.remove('selected');
     currentJSON = json;
     jsonField.value = JSON.stringify(json, null, 2);
     const shouldSwap = window.innerWidth < window.innerHeight !== currentJSON.l < currentJSON.d;
@@ -53,6 +52,8 @@ const viewField = document.getElementById('view') as HTMLSelectElement;
 const urlField = document.getElementById('url') as HTMLInputElement;
 const layerField = document.getElementById('layer') as HTMLSelectElement;
 const applyShapeButton = document.getElementById('apply-shape') as HTMLButtonElement;
+const deselectShapeButton = document.getElementById('deselect-shape') as HTMLButtonElement;
+const deleteShapeButton = document.getElementById('delete-shape') as HTMLButtonElement;
 const addShapeButton = document.getElementById('add-shape') as HTMLButtonElement;
 
 applyButton.addEventListener('click', () => {
@@ -97,8 +98,47 @@ applyShapeButton.addEventListener('click', () => {
     originalObject.l = +shapeLField.value;
     originalObject.d = +shapeDField.value;
     originalObject.h = +shapeHField.value;
+    init(currentJSON);
+    const wall = Array.from(lookup.entries()).find(x => x[1] === originalObject)?.[0];
+    if(!wall)
+        return;
+    renderer.getElement(wall)?.click();
+});
+
+
+deselectShapeButton.addEventListener('click', () => {
+    if (!selectedShape)
+        return;
+
+    selectedShape.element.classList.remove('selected');
     selectedShape = null;
-    document.getElementById('shape-settings')?.classList.add('hidden');
+    init(currentJSON);
+});
+
+deleteShapeButton.addEventListener('click', () => {
+    if (!selectedShape)
+        return;
+    const originalObject = lookup.get(selectedShape.wall) as any;
+    if (!originalObject)
+        return;
+
+    function checkArray(walls?: APIWall[]): boolean {
+        if (!walls)
+            return false;
+        const index = walls.indexOf(originalObject);
+        if (index === -1)
+            return false;
+        walls.splice(index, 1);
+        return true;
+    }
+
+    for (const f of currentJSON.floors) {
+        if (checkArray(f.walls.inner) || checkArray(f.walls.outer) || checkArray(f.glass) || checkArray(f.windows) || checkArray(f.items) || checkArray(f.sensors) || checkArray(f.floors))
+            break;
+    }
+    lookup.get(selectedShape.wall);
+    selectedShape.element.classList.toggle('selected');
+    selectedShape = null;
     init(currentJSON);
 });
 
@@ -116,7 +156,6 @@ document.addEventListener('click', (event) => {
     selectedShape?.element.classList.remove('selected');
     selectedShape = info;
     selectedShape?.element.classList.toggle('selected');
-    document.getElementById('shape-settings')?.classList.remove('hidden');
     const originalObject = lookup.get(info.wall);
     if (!originalObject)
         return;
