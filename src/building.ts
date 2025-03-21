@@ -207,11 +207,11 @@ type Block = Surface & {
 	h: number;
 }
 
-export type APIWall = Block & Position;
+export type APIWall = Block & Position & { class?: string };
 
-export type Walls = (APIWall & { o: orientation, class?: string })[];
+export type Walls = (APIWall & { o: orientation })[];
 
-export type APISensor = { api: string, valueProperty: string, stateProperty: string, unit?: string, pollingInterval: number };
+export type APISensor = { outside?: boolean, api: string, valueProperty: string, stateProperty: string, unit?: string, pollingInterval: number };
 
 export type APIBuilding = Block & {
 	name: string,
@@ -219,6 +219,7 @@ export type APIBuilding = Block & {
 	floors: (Surface & Position & {
 		name?: string,
 		floors: Walls,
+		ceilings?: Walls,
 		walls: {
 			outer: Walls,
 			inner: Walls
@@ -226,7 +227,7 @@ export type APIBuilding = Block & {
 		windows?: Walls,
 		glass?: Walls,
 		items?: Walls,
-		sensors?: (APIWall & APISensor & { layer?: string, class: string })[]
+		sensors?: (APIWall & APISensor & { layer?: string })[]
 	})[]
 }
 
@@ -253,6 +254,7 @@ export class Building {
 		for (const floor of json.floors) {
 			this._rotate(floor);
 			floor.floors?.forEach(x => this._rotate(x));
+			floor.ceilings?.forEach(x => this._rotate(x));
 			floor.walls?.outer?.forEach(x => this._rotate(x));
 			floor.walls?.inner?.forEach(x => this._rotate(x));
 			floor.windows?.forEach(x => this._rotate(x));
@@ -262,7 +264,7 @@ export class Building {
 		}
 	}
 
-	public static fromJSON(json: APIBuilding): { building: Building, lookup: Map<Wall, Block & Position> } {
+	public static fromJSON(json: APIBuilding): { building: Building, lookup: Map<Wall, APIWall> } {
 		const t = (x: number) => this._t(x);
 		const h = Math.max(json.h, json.d);
 		const lookup = new Map<Wall, Block & Position>();
@@ -276,9 +278,9 @@ export class Building {
 		}
 		let unit = 'vw';
 		if (window.innerWidth / json.l < window.innerHeight / h) {
-			this._ratio = 90 / json.l;
+			this._ratio = 80 / json.l;
 		} else {
-			this._ratio = 90 / h;
+			this._ratio = 80 / h;
 			unit = 'vh';
 		}
 		const b = new Building(json.name, t(json.l), t(json.h), t(json.d));
@@ -287,6 +289,8 @@ export class Building {
 			const floor = b.addFloor(t(f.x), t(f.y), t(f.z), t(f.l), t(f.d), f.name);
 			for (const x of f.floors ?? [])
 				lookup.set(floor.addFloor(t(x.x), t(x.y), t(x.z), t(x.l), t(x.h), t(x.d)).addClass(x.class), x);
+			for (const x of f.ceilings ?? [])
+				lookup.set(floor.addCeiling(t(x.x), t(x.y), t(x.z), t(x.l), t(x.h), t(x.d)).addClass(x.class), x);
 			for (const x of f.walls.outer ?? [])
 				lookup.set(this._addWall(x, floor, 'outer').addClass(x.class), x);
 			for (const x of f.walls.inner ?? [])
@@ -300,6 +304,10 @@ export class Building {
 			for (const x of f.sensors ?? []) {
 				const s = floor.addWall(this._t(x.x - x.l / 2), this._t(x.y - x.h / 2), this._t(x.z - x.d / 2), this._t(x.l), this._t(x.h), this._t(x.d)).addClass((x.class ?? '') + ' sensor').onLayer(x.layer);
 				lookup.set(s, x);
+				if (x.outside === true)
+					s.showOnlyOn3D();
+				else
+					s.showOnlyOnPlan();
 				s.data = x as APISensor;
 			}
 		}

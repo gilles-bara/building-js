@@ -4,10 +4,10 @@ export class Renderer {
     private readonly _div = document.createElement('div');
     private readonly _body = document.createElement('div');
 
-    private _rotationY = 45;
+    private _rotationY = 0;
     private _rotationX = 0;
 
-    private _viewPointY = 10;
+    private _viewPointY = this._building.height;
     private get _viewPoint(): string { return `50% calc(50% + ${this._viewPointY}${this._building.unit})`; }
 
     private _selectedFloor: null | Floor = null;
@@ -26,8 +26,6 @@ export class Renderer {
         this._body.classList.add('body');
         document.body.appendChild(this._body);
         document.addEventListener('keydown', (e) => {
-            if (!this._selectedFloor)
-                return;
             if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLButtonElement)
                 return;
             switch (e.key) {
@@ -85,11 +83,10 @@ export class Renderer {
     public apply(building: Building, floor = '', layer = ''): void {
         this._building = building;
         this.cleanUp();
-        this._selectFloor(this._building.floors.find(f => f.name === floor) ?? this._building.floors[0]);
+        this._selectFloor(this._building.floors.find(f => f.name === floor) ?? null);
         this.setLayer(layer);
         this._init();
-        this.render();
-        this._updateUI();
+        this._transform({resetX: true});
     }
 
     private _init(): void {
@@ -161,7 +158,7 @@ export class Renderer {
         div = document.createElement('div');
         for (const side of wall.sides) {
             const sideDiv = document.createElement('div');
-            sideDiv.classList.add('side', ...side.class.split(' '), ...wall.class.split(' '));
+            sideDiv.classList.add('side', ...side.class.split(' ').filter(x => x), ...wall.class.split(' ').filter(x => x));
             sideDiv.style.width = side.width + this._building.unit;
             sideDiv.style.height = side.height + this._building.unit;
             sideDiv.style.transform = side.transform;
@@ -174,7 +171,7 @@ export class Renderer {
         return div;
     }
 
-    private _selectFloor(floor: Floor): void {
+    private _selectFloor(floor: null | Floor): void {
         if (this._selectedFloor === floor)
             return;
         const reset = !this._selectedFloor;
@@ -190,7 +187,7 @@ export class Renderer {
             this._div.classList.remove('floorplan');
             this._rotationX = 0;
             this._rotationY = 0;
-            this._viewPointY = 10;
+            this._viewPointY = this._building.height;
         }
     }
 
@@ -287,10 +284,10 @@ export class Renderer {
         if (!wall.sides.length)
             return false;
 
-        if (wall.onlyOn3D && !this._selectedFloor)
+        if (wall.onlyOn3D && this._selectedFloor)
             return false;
 
-        if (wall.onlyOnPlan && this._selectedFloor)
+        if (wall.onlyOnPlan && !this._selectedFloor)
             return false;
 
         if (this._rotationX === -90)

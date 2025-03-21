@@ -3,10 +3,16 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
     <title>Building editor</title>
-    <link rel="stylesheet" href="./styles.min.css">
+    <link rel="stylesheet"
+          href="./styles.min.css">
     <style>
+        body {
+            background: #111111;
+        }
+
         .group.selected .side::before {
             content: "";
             position: absolute;
@@ -24,7 +30,7 @@
                 display: flex !important;
             }
         }
-        
+
         body:not(:has(.group.selected)) {
             .requires-no-shape {
                 display: flex !important;
@@ -35,49 +41,67 @@
             }
         }
 
+        summary {
+            font-weight: bold;
+            color: #213572;
+            cursor: pointer;
+            user-select: none;
+        }
+
         #panel {
             z-index: 999;
             display: flex;
             flex-direction: column;
             gap: 16px;
             position: absolute;
-            left: 16px;
-            top: 16px;
-            bottom: 16px;
+            left: 0;
+            top: 0;
+            bottom: 0;
             transition-duration: 0.4s;
             width: 400px;
-            background-color: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(4px);
+            background-color: #ffffff;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-            transform: translateX(-100%);
+            transform: translateX(calc(-100% + 16px));
             padding: 16px;
             box-sizing: border-box;
-            border-radius: 4px;
             overflow-y: auto;
 
             textarea {
                 resize: vertical;
             }
 
-            h2,
-            h3 {
-                margin: 0;
-            }
-
-            >form {
+            form,
+            details {
                 display: flex;
                 flex-direction: column;
                 gap: 16px;
-
-                &:has(:user-invalid) button {
-                    opacity: 0.4;
-                    pointer-events: none;
-                }
             }
 
+            form:has(:user-invalid) button {
+                opacity: 0.4;
+                pointer-events: none;
+            }
+
+            &.open,
             &:has(:focus-visible),
             &:hover {
                 transform: translateX(0);
+            }
+
+            .toggler {
+                align-self: flex-end;
+                color: #213572;
+                font-size: 10px;
+                padding: 4px 8px;
+                background-color: transparent;
+            }
+
+            .toggler::before {
+                content: 'dock';
+            }
+
+            &.open .toggler::before {
+                content: 'undock';
             }
         }
 
@@ -118,8 +142,8 @@
             }
 
             &:user-invalid {
-                border: 2px solid #722121;
-                outline: 2px solid #fd8383;
+                border: 2px solid #ad1e1e;
+                outline: 2px solid #ff7373;
             }
         }
 
@@ -127,15 +151,10 @@
             background-color: #213572;
             color: #ffffff;
             text-transform: uppercase;
+        }
 
-            &.danger {
-                background-color: #722121;
-                border-color: #722121;
-
-                &:focus-visible {
-                    outline: 2px solid #fd8383;
-                }
-            }
+        button {
+            align-self: flex-end;
         }
 
         .inputs {
@@ -155,143 +174,192 @@
 
 <body>
     <div id="panel">
-        <h2>Settings</h2>
-        <form>
-            <h3>General settings</h3>
-            <label for="json">File contents</label>
-            <textarea rows="10" id="json" required>{
-                "name": "Building",
-                "l": 10,
-                "h": 4,
-                "d": 10,
-                "styles": [
-                  { "class": "state.normal", "style": "background-color: #2ECC71 !important" },
-                  { "class": "state.warning", "style": "background-color: #F39C12 !important" },
-                  { "class": "state.critical", "style": "background-color: #E74C3C !important" }              
-                ],
-                "floors": [
-                  {
-                    "name": "Ground Floor",
-                    "l": 15,
+        <button onclick="document.getElementById('panel').classList.toggle('open')"
+                class="toggler"></button>
+        <details open>
+            <summary>General settings</summary>
+            <form>
+                <label for="json">File contents</label>
+                <textarea rows="10"
+                          id="json"
+                          required>{
+                    "name": "Building",
+                    "l": 10,
+                    "h": 4,
                     "d": 10,
-                    "x": 0,
-                    "y": 0,
-                    "z": 0,
-                    "floors": [{ "x": 0, "y": 0, "z": 0, "l": 10, "d": 10, "h": 0.2 }],
-                    "walls":{
-                      "outer": [
-                        { "x": 0, "y": 0.2, "z": 0, "l": 10, "d": 0.2, "h": 2.8 },
-                        { "x": 0, "y": 0.2, "z": 9.8, "l": 10, "d": 0.2, "h": 2.8 },
-                        { "x": 0, "y": 0.2, "z": 0.2, "l": 9.6, "d": 0.2, "h": 2.8, "o": "ns" },
-                        { "x": 9.8, "y": 0.2, "z": 0.2, "l": 9.6, "d": 0.2, "h": 2.8, "o": "ns" }
-                      ],
-                      "inner": []
-                    },
-                    "windows": [],
-                    "glass": [],
-                    "items": [],
-                    "sensors": [
-                      { "x": 14.4, "y": 2.4, "z": 0.5, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "cpu", "unit": "%", "api": "testAPI", "pollingInterval": 5 } 
+                    "styles": [
+                      { "class": "state.normal", "style": "background-color: #2ECC71 !important" },
+                      { "class": "state.warning", "style": "background-color: #F39C12 !important" },
+                      { "class": "state.critical", "style": "background-color: #E74C3C !important" }              
+                    ],
+                    "floors": [
+                      {
+                        "name": "Ground Floor",
+                        "l": 15,
+                        "d": 10,
+                        "x": 0,
+                        "y": 0,
+                        "z": 0,
+                        "floors": [{ "x": 0, "y": 0, "z": 0, "l": 10, "d": 10, "h": 0.2 }],
+                        "walls":{
+                          "outer": [
+                            { "x": 0, "y": 0.2, "z": 0, "l": 10, "d": 0.2, "h": 2.8 },
+                            { "x": 0, "y": 0.2, "z": 9.8, "l": 10, "d": 0.2, "h": 2.8 },
+                            { "x": 0, "y": 0.2, "z": 0.2, "l": 9.6, "d": 0.2, "h": 2.8, "o": "ns" },
+                            { "x": 9.8, "y": 0.2, "z": 0.2, "l": 9.6, "d": 0.2, "h": 2.8, "o": "ns" }
+                          ],
+                          "inner": []
+                        },
+                        "ceilings": [],
+                        "windows": [],
+                        "glass": [],
+                        "items": [],
+                        "sensors": [
+                          { "x": 14.4, "y": 2.4, "z": 0.5, "l": 0.2, "d": 0.2, "h": 0.05, "o":"ns", "class": "black", "layer": "cpu", "unit": "%", "api": "testAPI", "pollingInterval": 5 } 
+                        ]
+                      }
                     ]
-                  }
-                ]
-              }</textarea>
-            <button type="button" id="apply">Apply</button>
-        </form>
-        <form class="requires-no-shape">
-            <h3>Shape settings</h3>
-            <label for="shape-type">Shape type</label>
-            <select id="shape-type" required>
-                <option value="walls.outer">Outer wall</option>
-                <option value="walls.inner">Inner wall</option>
-                <option value="windows">Window</option>
-                <option value="glass">Glass</option>
-                <option value="items">Item</option>
-                <option value="sensors">Sensor</option>
-            </select>
-            <button type="button" id="add-shape">Add</button>
-        </form>
-        <form class="requires-shape">
-            <h3>Shape settings</h3>
-            <div class="inputs">
-                <div>
-                    <label for="shape-x">X</label>
-                    <input type="number" id="shape-x" required>
+                  }</textarea>
+                <button type="button"
+                        id="apply">Apply</button>
+            </form>
+        </details>
+        <details open>
+            <summary>Shape settings</summary>
+            <form class="requires-no-shape">
+                <label for="shape-type">Shape type</label>
+                <select id="shape-type"
+                        required>
+                    <option value="floors">Floors</option>
+                    <option value="ceilings">Ceiling</option>
+                    <option value="walls.outer">Outer wall</option>
+                    <option value="walls.inner">Inner wall</option>
+                    <option value="windows">Window</option>
+                    <option value="glass">Glass</option>
+                    <option value="items">Item</option>
+                    <option value="sensors">Sensor</option>
+                </select>
+                <button type="button"
+                        id="add-shape">Add</button>
+            </form>
+            <form class="requires-shape">
+                <div class="inputs">
+                    <div>
+                        <label for="shape-x">X</label>
+                        <input type="number"
+                               step="0.01"
+                               id="shape-x"
+                               required>
+                    </div>
+
+                    <div>
+                        <label for="shape-y">Y</label>
+                        <input type="number"
+                               step="0.01"
+                               id="shape-y"
+                               required>
+                    </div>
+
+                    <div>
+                        <label for="shape-z">Z</label>
+                        <input type="number"
+                               step="0.01"
+                               id="shape-z"
+                               required>
+                    </div>
                 </div>
 
-                <div>
-                    <label for="shape-y">Y</label>
-                    <input type="number" id="shape-y" required>
-                </div>
+                <div class="inputs">
+                    <div>
+                        <label for="shape-l">Length</label>
+                        <input type="number"
+                               step="0.01"
+                               id="shape-l"
+                               required
+                               min="0">
+                    </div>
 
-                <div>
-                    <label for="shape-z">Z</label>
-                    <input type="number" id="shape-z" required>
-                </div>
-            </div>
+                    <div>
+                        <label for="shape-d">Depth</label>
+                        <input type="number"
+                               step="0.01"
+                               id="shape-d"
+                               required
+                               min="0">
+                    </div>
 
-            <div class="inputs">
-                <div>
-                    <label for="shape-l">Length</label>
-                    <input type="number" id="shape-l" required min="0">
+                    <div>
+                        <label for="shape-h">Height</label>
+                        <input type="number"
+                               step="0.01"
+                               id="shape-h"
+                               required
+                               min="0">
+                    </div>
                 </div>
+                <div class="inputs">
+                    <div>
+                        <label for="classes">Classes</label>
+                        <input id="classes">
+                    </div>
+                </div>
+            </form>
+        </details>
+        <details>
+            <summary>URL</summary>
+            <form>
+                <div class="inputs">
+                    <div>
+                        <label for="mode">Mode</label>
+                        <select id="mode"
+                                required>
+                            <option value="">Normal</option>
+                            <option value="x-ray">X-Ray</option>
+                            <option value="mono">Mono</option>
+                        </select>
+                    </div>
 
-                <div>
-                    <label for="shape-d">Depth</label>
-                    <input type="number" id="shape-d" required min="0">
-                </div>
+                    <div>
+                        <label for="view">Initial view</label>
+                        <select id="view"
+                                required>
+                            <option value="top">Top</option>
+                            <option value="front">Front</option>
+                            <option value="front left">Front Left</option>
+                            <option value="left">Left</option>
+                            <option value="back left">Back Left</option>
+                            <option value="back">Back</option>
+                            <option value="back right">Back Right</option>
+                            <option value="right">Right</option>
+                            <option value="front right">Front Right</option>
+                        </select>
+                    </div>
 
-                <div>
-                    <label for="shape-h">Height</label>
-                    <input type="number" id="shape-h" required min="0">
-                </div>
-            </div>
+                    <div>
+                        <label for="layer">Layer</label>
+                        <select id="layer"
+                                required>
+                        </select>
+                    </div>
 
-            <button type="button" id="deselect-shape">Deselect</button>
-            <button type="button" id="apply-shape">Update</button>
-            <button type="button" class="danger" id="delete-shape">Delete</button>
-        </form>
-        <form>
-            <h3>URL</h3>
-            <div class="inputs">
-                <div>
-                    <label for="mode">Mode</label>
-                    <select id="mode" required>
-                        <option value="">Normal</option>
-                        <option value="x-ray">X-Ray</option>
-                        <option value="mono">Mono</option>
-                    </select>
+                    <div>
+                        <label for="floor">Floor</label>
+                        <select id="floor"
+                                required>
+                        </select>
+                    </div>
                 </div>
-
-                <div>
-                    <label for="view">Initial view</label>
-                    <select id="view" required>
-                        <option value="top">Top</option>
-                        <option value="front">Front</option>
-                        <option value="front left">Front Left</option>
-                        <option value="left">Left</option>
-                        <option value="back left">Back Left</option>
-                        <option value="back">Back</option>
-                        <option value="back right">Back Right</option>
-                        <option value="right">Right</option>
-                        <option value="front right">Front Right</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label for="layer">Layer</label>
-                    <select id="layer" required>
-                        <option value="">None</option>
-                        <option value="x-ray">X-Ray</option>
-                        <option value="mono">Mono</option>
-                    </select>
-                </div>
-            </div>
-            <input readonly id="url">
-        </form>
+                <input readonly
+                       id="url">
+            </form>
+        </details>
     </div>
-    <input type="color" id="color" value="#111111" oninput="document.body.style.background = this.value">
-    <script src="./dist/m.js" type="module"></script>
+    <input type="color"
+           id="color"
+           value="#111111"
+           oninput="document.body.style.background = this.value">
+    <script src="./dist/m.js"
+            type="module"></script>
 </body>
 
 </html>

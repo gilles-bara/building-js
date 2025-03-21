@@ -1,1 +1,3 @@
-mklink editor\styles.css styles.css
+cd editor
+mklink styles.css ..\styles.css
+cd ../
