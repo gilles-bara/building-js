@@ -147,6 +147,10 @@ export class Floor {
 		return wall.x > this._width * 0.95;
 	}
 
+	public distanceFromTop(wall: Wall): string {
+		return (1.15 * this.building.height - this._y - wall.y - wall.height) + this.building.unit;
+	}
+
 	public addWall(x: number, y: number, z: number, width: number, height: number, depth: number): Wall {
 		x = this._x + x;
 		y = this._y + y;
@@ -211,11 +215,11 @@ export type APIWall = Block & Position & { class?: string };
 
 export type Walls = (APIWall & { o: orientation })[];
 
-export type APISensor = { outside?: boolean, api: string, valueProperty: string, stateProperty: string, unit?: string, pollingInterval: number };
+export type APISensor = { outside?: boolean, api: string, layer?: string, valueProperty: string, stateProperty: string, unit?: string, pollingInterval: number };
 
 export type APIBuilding = Block & {
 	name: string,
-	styles: { class: string, style: string }[],
+	styles: { selector: string, style: string }[],
 	floors: (Surface & Position & {
 		name?: string,
 		floors: Walls,
@@ -227,7 +231,7 @@ export type APIBuilding = Block & {
 		windows?: Walls,
 		glass?: Walls,
 		items?: Walls,
-		sensors?: (APIWall & APISensor & { layer?: string })[]
+		sensors?: (APIWall & APISensor)[]
 	})[]
 }
 
@@ -273,7 +277,7 @@ export class Building {
 			const se = document.createElement('style');
 			se.id = 'custom-style';
 			for (const s of json.styles)
-				se.innerHTML += `.${s.class}{${s.style}}`;
+				se.innerHTML += `${s.selector}{${s.style}}`;
 			document.body.appendChild(se);
 		}
 		let unit = 'vw';

@@ -88,8 +88,45 @@
                 transform: translateX(0);
             }
 
+            .header-options {
+                display: flex;
+                gap: 8px;
+                flex-direction: row-reverse;
+                justify-content: space-between;
+            }
+
+            &.swapped {
+                left: auto;
+                right: 0;
+                transform: translateX(calc(100% - 16px));
+
+                .header-options {
+                    flex-direction: row;
+                }
+
+                &.open,
+                &:has(:focus-visible),
+                &:hover {
+                    transform: translateX(0);
+                }
+            }
+
+            .swapper {
+                color: #213572;
+                font-size: 10px;
+                padding: 4px 8px;
+                background-color: transparent;
+            }
+
+            .swapper::before {
+                content: 'to right';
+            }
+
+            &.swapped .swapper::before {
+                content: 'to left';
+            }
+
             .toggler {
-                align-self: flex-end;
                 color: #213572;
                 font-size: 10px;
                 padding: 4px 8px;
@@ -169,13 +206,21 @@
                 width: 0;
             }
         }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 
 <body>
     <div id="panel">
-        <button onclick="document.getElementById('panel').classList.toggle('open')"
-                class="toggler"></button>
+        <div class="header-options">
+            <button onclick="document.getElementById('panel').classList.toggle('swapped')"
+                    class="swapper"></button>
+            <button onclick="document.getElementById('panel').classList.toggle('open')"
+                    class="toggler"></button>
+        </div>
         <details open>
             <summary>General settings</summary>
             <form>
@@ -297,6 +342,37 @@
                                min="0">
                     </div>
                 </div>
+
+                <div class="inputs sensor-inputs hidden">
+                    <div>
+                        <label for="sensor-api">API</label>
+                        <input type="text"
+                               id="sensor-api"
+                               required>
+                    </div>
+
+                    <div>
+                        <label for="sensor-layer">Layer</label>
+                        <input type="text"
+                               id="sensor-layer">
+                    </div>
+
+                    <div>
+                        <label for="sensor-unit">Unit</label>
+                        <input type="text"
+                               id="sensor-unit">
+                    </div>
+
+                    <div>
+                        <label for="sensor-polling">Polling (s)</label>
+                        <input type="number"
+                               step="1"
+                               id="sensor-polling"
+                               required
+                               min="5">
+                    </div>
+                </div>
+
                 <div class="inputs">
                     <div>
                         <label for="classes">Classes</label>

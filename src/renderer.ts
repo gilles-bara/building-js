@@ -80,19 +80,19 @@ export class Renderer {
         return this._wallElements.get(wall) ?? null;
     }
 
-    public apply(building: Building, floor = '', layer = ''): void {
+    public apply(building: Building, floor = '', layer = '', resetView = true): void {
         this._building = building;
         this.cleanUp();
         this._selectFloor(this._building.floors.find(f => f.name === floor) ?? null);
         this.setLayer(layer);
         this._init();
-        this._transform({resetX: true});
+        this._transform({ resetX: resetView });
     }
 
     private _init(): void {
         if (!this._div.parentElement)
             this._body.append(this._div);
-        this._body.style.perspective = 5 * this._building.depth + this._building.unit;
+        this._body.style.perspective = 2.5 * Math.max(this._building.depth, this._building.width) + this._building.unit;
         this._div.classList.add('building')
         this._div.style.width = this._building.width + this._building.unit;
         this._div.style.height = this._building.height + this._building.unit;
@@ -162,8 +162,8 @@ export class Renderer {
             sideDiv.style.width = side.width + this._building.unit;
             sideDiv.style.height = side.height + this._building.unit;
             sideDiv.style.transform = side.transform;
-            if (wall.hasClass('sensor') && wall.mainSide === side && wall.data)
-                this._sensors.set(wall, new Sensor(wall.data as unknown as APISensor, sideDiv));
+            if (wall.hasClass('sensor') && wall.top === side && wall.data)
+                this._sensors.set(wall, new Sensor(wall.data as unknown as APISensor, sideDiv, wall));
             div.appendChild(sideDiv);
         }
         div.classList.add('3d', 'group');
@@ -187,7 +187,7 @@ export class Renderer {
             this._div.classList.remove('floorplan');
             this._rotationX = 0;
             this._rotationY = 0;
-            this._viewPointY = this._building.height;
+            this._viewPointY = -40;
         }
     }
 
@@ -246,7 +246,7 @@ export class Renderer {
             return;
         this._rotationX = newX;
         this._rotationY = newY;
-        this._transform();
+        this._transform({ resetX: this._rotationY === 0, up: newX === -90 });
     }
 
     public setLayer(layer: string = ''): void {
@@ -279,7 +279,7 @@ export class Renderer {
     }
 
     private _canShowWall(wall: Wall): boolean {
-        if (wall.layers.size && !wall.layers.has(this._currentLayer))
+        if (wall.layers.size && this._currentLayer !== 'all' && !wall.layers.has(this._currentLayer))
             return false;
         if (!wall.sides.length)
             return false;
@@ -326,12 +326,19 @@ class Sensor {
     private _currentState = '';
     private _isVisible = false;
 
-    public constructor(private readonly _sensor: APISensor, private readonly _parentDiv: HTMLElement) {
+
+    public constructor(private readonly _sensor: APISensor, private readonly _parentDiv: HTMLElement, wall: Wall) {
         this._pollInterval = (this._sensor.pollingInterval ?? 30) * 1000;
         this._stateSpan.classList.add('state');
         this._textSpan.innerText = 'loading...';
         this._div.appendChild(this._stateSpan);
         this._div.appendChild(this._textSpan);
+        const anchor = document.createElement('div');
+        this._div.appendChild(anchor);
+        anchor.classList.add('anchor');
+        const h = wall.floor.distanceFromTop(wall);
+        anchor.style.height = h;
+        this._div.style.translate = `0px 0px ${h}`;
     }
 
     private static async _fetch(sensor: APISensor): Promise<Metric | null> {

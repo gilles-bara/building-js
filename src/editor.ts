@@ -1,11 +1,13 @@
-import { APIBuilding, APIWall, Building } from "./building";
+import { APIBuilding, APISensor, APIWall, Building } from "./building";
 import { Renderer } from "./renderer";
 
+let latestShape: APIWall;
 let currentJSON: APIBuilding;
 let renderer: Renderer;
 let lookup: ReturnType<typeof Building.fromJSON>['lookup'];
 let selectedShape: ReturnType<Renderer['getWall']>;
-const params = new URLSearchParams(window.location.search);
+const search = window.location.hash.replace('#', '?')
+const params = new URLSearchParams(search);
 function init(json: APIBuilding = JSON.parse(window.localStorage.getItem('latest-build') ?? jsonField?.value ?? "{}")): void {
     window.localStorage.setItem('latest-build', JSON.stringify(json));
     currentJSON = json;
@@ -15,9 +17,9 @@ function init(json: APIBuilding = JSON.parse(window.localStorage.getItem('latest
         Building.rotate(currentJSON);
     const info = Building.fromJSON(currentJSON);
     lookup = info.lookup;
-    if (renderer)
-        renderer.apply(info.building, params.get('floor') ?? '', params.get('layer') ?? '');
-    else {
+    if (renderer) {
+        renderer.apply(info.building, params.get('floor') ?? '', params.get('layer') ?? '', false);
+    } else {
         if (params.get('xray') === 'true')
             document.body.classList.add('x-ray');
         if (params.get('mono') === 'true')
@@ -44,10 +46,10 @@ function ensureOptions(collection: HTMLOptionsCollection, options: string[]): vo
 }
 
 function updateOptions(json: APIBuilding): void {
-    const layers = new Set<string>();
+    const layers = new Set<string>(['all']);
     for (const f of json.floors)
         f.sensors?.forEach(s => layers.add(s.layer ?? ''));
-    const layerOptions = Array.from(layers).sort();
+    const layerOptions = Array.from(layers).filter(x => !!x).sort();
     ensureOptions(layerField.options, layerOptions);
     ensureOptions(floorField.options, json.floors.map(f => f.name).filter(x => !!x) as string[]);
 }
@@ -60,6 +62,10 @@ const shapeZField = document.getElementById('shape-z') as HTMLInputElement;
 const shapeLField = document.getElementById('shape-l') as HTMLInputElement;
 const shapeDField = document.getElementById('shape-d') as HTMLInputElement;
 const shapeHField = document.getElementById('shape-h') as HTMLInputElement;
+const sensorAPIField = document.getElementById('sensor-api') as HTMLInputElement;
+const sensorUnitField = document.getElementById('sensor-unit') as HTMLInputElement;
+const sensorLayerField = document.getElementById('sensor-layer') as HTMLInputElement;
+const sensorPollingField = document.getElementById('sensor-polling') as HTMLInputElement;
 const classesField = document.getElementById('classes') as HTMLInputElement;
 const shapeTypeField = document.getElementById('shape-type') as HTMLSelectElement;
 const modeField = document.getElementById('mode') as HTMLSelectElement;
@@ -86,6 +92,8 @@ addShapeButton.addEventListener('click', () => {
     let array: any = f;
     let d = 0.17;
     let l = f.l;
+    let x = f.x;
+    let z = f.z;
     if (shapeType.indexOf('inner') > -1) {
         d = 0.15;
         h -= 0.20;
@@ -103,10 +111,22 @@ addShapeButton.addEventListener('click', () => {
         h = 0.6;
         d = 0.6;
         l = 0.6;
+    } else if (shapeType.indexOf('sensors') > -1) {
+        h = 0.6;
+        d = 0.6;
+        l = 0.6;
+        if (latestShape) {
+            h = 0.02;
+            d = 0.1;
+            l = 0.1;
+            y = latestShape.y + latestShape.h;
+            x = +(latestShape.x + latestShape.l / 2).toFixed(2);
+            z = +(latestShape.z + latestShape.d / 2).toFixed(2);
+        }
     }
     for (const x of shapeType.split('.'))
         array = array ? array[x] as typeof currentJSON.floors[0]['glass'] : [];
-    const wall = { x: f.x, y, z: f.z, l, d, h, o: 'we' };
+    const wall = { x, y, z, l, d, h, o: 'we' };
     array?.push(wall);
     init(currentJSON);
     const w = Array.from(lookup.entries()).find(x => x[1] === wall)?.[0];
@@ -116,7 +136,7 @@ addShapeButton.addEventListener('click', () => {
 });
 
 function updateUrl() {
-    let url = `?layer=${layerField.value}&floor=${floorField.value}&view=${viewField.value}`;
+    let url = `#layer=${layerField.value}&floor=${floorField.value}&view=${viewField.value}`;
     if (modeField.value)
         url += "&" + modeField.value + "=true";
     urlField.value = url;
@@ -142,6 +162,27 @@ function updateShape(): void {
         +shapeHField.value,
         classesField.value
     ];
+    let hasChange = false;
+    if (selectedShape.wall.hasClass('sensor')) {
+        const [api, unit, layer, polling] = [
+            sensorAPIField.value,
+            sensorUnitField.value,
+            sensorLayerField.value,
+            +sensorPollingField.value
+        ];
+        const sensorObject = originalObject as (APISensor & APIWall);
+        hasChange = true;
+        if (sensorObject.api !== api && api)
+            sensorObject.api = api;
+        else if (sensorObject.unit !== unit)
+            sensorObject.unit = unit;
+        else if (sensorObject.layer !== layer)
+            sensorObject.layer = layer;
+        else if (sensorObject.pollingInterval !== polling && !isNaN(polling))
+            sensorObject.pollingInterval = polling;
+        else
+            hasChange = false;
+    }
     if (originalObject.x !== x && !isNaN(x))
         originalObject.x = x;
     else if (originalObject.y !== y && !isNaN(y))
@@ -156,7 +197,7 @@ function updateShape(): void {
         originalObject.h = h;
     else if (originalObject.class !== c)
         originalObject.class = c;
-    else
+    else if (!hasChange)
         return;
     init(currentJSON);
     const wall = Array.from(lookup.entries()).find(x => x[1] === originalObject)?.[0];
@@ -171,6 +212,10 @@ shapeZField.addEventListener('input', () => updateShape());
 shapeLField.addEventListener('input', () => updateShape());
 shapeDField.addEventListener('input', () => updateShape());
 shapeHField.addEventListener('input', () => updateShape());
+sensorAPIField.addEventListener('input', () => updateShape());
+sensorUnitField.addEventListener('input', () => updateShape());
+sensorPollingField.addEventListener('input', () => updateShape());
+sensorLayerField.addEventListener('blur', () => updateShape());
 classesField.addEventListener('input', () => updateShape());
 
 function deleteShape(): void {
@@ -223,10 +268,16 @@ document.addEventListener('click', (event) => {
     if (!event.ctrlKey || selectedShape?.wall !== info.wall)
         selectedShape?.element.classList.remove('selected');
     selectedShape = info;
+    const isSensor = selectedShape.wall.hasClass('sensor');
+    if (isSensor)
+        document.querySelector('.sensor-inputs')?.classList.remove('hidden');
+    else
+        document.querySelector('.sensor-inputs')?.classList.add('hidden');
     selectedShape?.element.classList.toggle('selected');
     const originalObject = lookup.get(info.wall);
     if (!originalObject)
         return;
+    latestShape = originalObject;
     if (shapeXField !== document.activeElement)
         shapeXField.value = originalObject.x.toString();
     if (shapeYField !== document.activeElement)
@@ -241,4 +292,15 @@ document.addEventListener('click', (event) => {
         shapeHField.value = originalObject.h.toString();
     if (classesField !== document.activeElement)
         classesField.value = originalObject.class ?? '';
+    if (isSensor) {
+        const sensorObject = originalObject as APISensor & APIWall;
+        if (sensorAPIField !== document.activeElement)
+            sensorAPIField.value = sensorObject.api ?? '';
+        if (sensorUnitField !== document.activeElement)
+            sensorUnitField.value = sensorObject.unit ?? '';
+        if (sensorLayerField !== document.activeElement)
+            sensorLayerField.value = sensorObject.layer ?? '';
+        if (sensorPollingField !== document.activeElement)
+            sensorPollingField.value = sensorObject.pollingInterval.toString();
+    }
 });
