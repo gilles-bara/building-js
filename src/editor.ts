@@ -7,7 +7,14 @@ let renderer: Renderer;
 let lookup: ReturnType<typeof Building.fromJSON>['lookup'];
 let selectedShape: ReturnType<Renderer['getWall']>;
 const search = window.location.hash.replace('#', '?')
-const params = new URLSearchParams(search);
+let params = new URLSearchParams(search);
+
+window.addEventListener('hashchange', (event) => {
+    params = new URLSearchParams(window.location.hash.replace('#', '?'));
+    applyParams();
+    renderer.applySettings(params.get('floor') ?? '', params.get('layer') ?? '', false);
+});
+
 function init(json: APIBuilding = JSON.parse(window.localStorage.getItem('latest-build') ?? jsonField?.value ?? "{}")): void {
     window.localStorage.setItem('latest-build', JSON.stringify(json));
     currentJSON = json;
@@ -17,21 +24,30 @@ function init(json: APIBuilding = JSON.parse(window.localStorage.getItem('latest
         Building.rotate(currentJSON);
     const info = Building.fromJSON(currentJSON);
     lookup = info.lookup;
-    if (renderer) {
+    if (renderer)
         renderer.apply(info.building, params.get('floor') ?? '', params.get('layer') ?? '', false);
-    } else {
-        if (params.get('xray') === 'true')
-            document.body.classList.add('x-ray');
-        if (params.get('mono') === 'true')
-            document.body.classList.add('mono');
+    else
         renderer = new Renderer(info.building, params.get('floor') ?? '', params.get('layer') ?? '');
-        if (params.get('view') != null)
-            renderer.setView(params.get('view') ?? '');
-    }
+
     updateOptions(json);
 }
 
-function ensureOptions(collection: HTMLOptionsCollection, options: string[]): void {
+function applyParams() {
+    if (params.get('xray') === 'true')
+        document.body.classList.add('x-ray');
+    else
+        document.body.classList.remove('x-ray');
+    if (params.get('mono') === 'true')
+        document.body.classList.add('mono');
+    else
+        document.body.classList.remove('mono');
+    if (params.get('view') != null && renderer)
+        renderer.setView(params.get('view') ?? '');
+}
+
+function ensureOptions(field: HTMLSelectElement, options: string[]): void {
+    const collection = field.options;
+    const value = field.value;
     collection.length = 0;
     const option = document.createElement('option');
     option.innerText = 'None';
@@ -41,6 +57,8 @@ function ensureOptions(collection: HTMLOptionsCollection, options: string[]): vo
         const option = document.createElement('option');
         option.innerText = o;
         option.value = o;
+        if (o === value)
+            option.selected = true;
         collection.add(option);
     }
 }
@@ -50,8 +68,8 @@ function updateOptions(json: APIBuilding): void {
     for (const f of json.floors)
         f.sensors?.forEach(s => layers.add(s.layer ?? ''));
     const layerOptions = Array.from(layers).filter(x => !!x).sort();
-    ensureOptions(layerField.options, layerOptions);
-    ensureOptions(floorField.options, json.floors.map(f => f.name).filter(x => !!x) as string[]);
+    ensureOptions(layerField, layerOptions);
+    ensureOptions(floorField, json.floors.map(f => f.name).filter(x => !!x) as string[]);
 }
 
 const jsonField = document.getElementById('json') as HTMLTextAreaElement;
@@ -71,6 +89,7 @@ const shapeTypeField = document.getElementById('shape-type') as HTMLSelectElemen
 const modeField = document.getElementById('mode') as HTMLSelectElement;
 const viewField = document.getElementById('view') as HTMLSelectElement;
 const urlField = document.getElementById('url') as HTMLInputElement;
+const applyURLButton = document.getElementById('apply-url') as HTMLButtonElement;
 const layerField = document.getElementById('layer') as HTMLSelectElement;
 const floorField = document.getElementById('floor') as HTMLSelectElement;
 const addShapeButton = document.getElementById('add-shape') as HTMLButtonElement;
@@ -80,7 +99,12 @@ applyButton.addEventListener('click', () => {
     init(json);
 });
 
+applyURLButton.addEventListener('click', () => {
+    window.open('./' + urlField.value, '_self');
+});
+
 init();
+applyParams();
 
 addShapeButton.addEventListener('click', () => {
     const shapeType = shapeTypeField.value;

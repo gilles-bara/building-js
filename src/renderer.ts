@@ -82,12 +82,17 @@ export class Renderer {
 
     public apply(building: Building, floor = '', layer = '', resetView = true): void {
         this._building = building;
+        this.applySettings(floor, layer, resetView);
+    }
+
+    public applySettings(floor = '', layer = '', resetView = true): void {
         this.cleanUp();
         this._selectFloor(this._building.floors.find(f => f.name === floor) ?? null);
         this.setLayer(layer);
         this._init();
         this._transform({ resetX: resetView });
     }
+
 
     private _init(): void {
         if (!this._div.parentElement)
