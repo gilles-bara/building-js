@@ -1,5 +1,7 @@
 node_modules
-dist
+dist/*
+editor/dist/*
 package-lock.json
 *.br
 *.min.*
+!*.zip
