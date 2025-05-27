@@ -63,7 +63,7 @@ type APIBuilding = Block & {
     })[];
 };
 ```
-And simple rack ([full version](https://github.com/gilles-bara/building-js/blob/master/assets/json/rack.json)) would look something like this:
+And simple rack ([full version](https://github.com/gilles-bara/building-js/blob/master/assets/json/rack.json)) would look something like this ([live demo](https://slc-gillesba.skyline.local/building/index.html#file=./assets/json/rack.json&view=left%20back)):
 ```json
 {
   "name": "rack",
