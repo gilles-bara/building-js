@@ -7,7 +7,8 @@ let currentRenderer: Renderer;
 let latestBuilding: APIBuilding;
 async function init(file: string = params.get('file') ?? './assets/json/building.json'): Promise<void> {
     if (latestFile !== file) {
-        const req = await fetch(file, { method: 'GET', mode: 'cors' });
+        const shouldCache = params.get('no-cache') !== 'true';
+        const req = await fetch(`${file}${shouldCache ? '' : `?t=${Date.now()}`}`, { method: 'GET', mode: 'cors', cache: !shouldCache ? "no-store" : 'default' });
         latestBuilding = (await req.json()) as APIBuilding;
         const shouldSwap = window.innerWidth < window.innerHeight !== latestBuilding.l < latestBuilding.d;
         if (shouldSwap)

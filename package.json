@@ -10,7 +10,8 @@
     "zip": "@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./deploy.bat",
     "zipAll": "@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./deploy.bat",
     "start": "concurrently \"npm run build\" \"npm run serve\"",
-    "init": "@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./init.bat"
+    "init": "@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./init.bat",
+    "build-all": "cd ./editor && npm run build && cd ../ && npm run build"
   },
   "keywords": [],
   "author": "",
