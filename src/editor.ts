@@ -100,7 +100,7 @@ applyButton.addEventListener('click', () => {
 });
 
 applyURLButton.addEventListener('click', () => {
-    window.open('./' + urlField.value, '_self');
+    window.open('./index.html' + urlField.value, '_self');
 });
 
 init();
@@ -110,8 +110,27 @@ addShapeButton.addEventListener('click', () => {
     const shapeType = shapeTypeField.value;
     if (!shapeType)
         return;
+    if (!currentJSON.floors.length)
+        currentJSON.floors.push({
+            x: 0,
+            y: 0,
+            z: 0,
+            d: currentJSON.d,
+            l: currentJSON.l,
+            name: 'Floor 1',
+            floors: [],
+            ceilings: [],
+            walls: {
+                outer: [],
+                inner: []
+            },
+            windows: [],
+            glass: [],
+            items: [],
+            sensors: []
+        });
     const f = currentJSON.floors[0];
-    let y = f.floors[0]?.h ?? 0.23;
+    let y = f?.floors[0]?.h ?? 0.23;
     let h = currentJSON.h - y;
     let array: any = f;
     let d = 0.17;

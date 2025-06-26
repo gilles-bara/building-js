@@ -7,6 +7,10 @@ export class Renderer {
     private _rotationY = 0;
     private _rotationX = 0;
 
+
+    private get _defaultViewPointY(): number {
+        return this._building.height >= 60 ? 0 : -this._building.height / 2;
+    }
     private _viewPointY = this._building.height;
     private get _viewPoint(): string { return `50% calc(50% + ${this._viewPointY}${this._building.unit})`; }
 
@@ -97,7 +101,8 @@ export class Renderer {
     private _init(): void {
         if (!this._div.parentElement)
             this._body.append(this._div);
-        this._body.style.perspective = 2.5 * Math.max(this._building.depth, this._building.width) + this._building.unit;
+        const max = Math.max(this._building.height, this._building.depth, this._building.width);
+        this._body.style.perspective = 2.5 * max + this._building.unit;
         this._div.classList.add('building')
         this._div.style.width = this._building.width + this._building.unit;
         this._div.style.height = this._building.height + this._building.unit;
@@ -186,13 +191,13 @@ export class Renderer {
             if (reset) {
                 this._rotationX = 0;
                 this._rotationY = 0;
-                this._viewPointY = -40;
+                this._viewPointY = this._defaultViewPointY;
             }
         } else {
             this._div.classList.remove('floorplan');
             this._rotationX = 0;
             this._rotationY = 0;
-            this._viewPointY = -40;
+            this._viewPointY = this._defaultViewPointY;
         }
     }
 
@@ -264,7 +269,7 @@ export class Renderer {
                 this._viewPointY = 0;
                 this._rotationX = -90;
             } else {
-                this._viewPointY = -40;
+                this._viewPointY = this._defaultViewPointY;
                 this._rotationX = 0;
             }
             this._rotationY = this._rotationY - (this._rotationY % 360) + 0;
