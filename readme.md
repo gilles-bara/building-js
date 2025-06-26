@@ -63,7 +63,9 @@ type APIBuilding = Block & {
     })[];
 };
 ```
+
 And simple rack ([full version](https://github.com/gilles-bara/building-js/blob/master/assets/json/rack.json)) would look something like this ([live demo](https://slc-gillesba.skyline.local/building/index.html#file=./assets/json/rack.json&view=left%20back)):
+
 ```json
 {
   "name": "rack",
@@ -225,6 +227,7 @@ Use URL hash strategy to pass configuration:
 Available parameters:
 
 - 📁 `file`: Path to the building JSON file
+- ⟳ `no-cache=true`: Enforce the latest version of the JSON file
 - 🧬 `xray=true`: Show x-ray view
 - 🎨 `mono=true`: Show monochromatic view
 - 🧩 `layer=layername`: Filter visible elements by layer
